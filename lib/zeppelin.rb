@@ -15,7 +15,7 @@ class Zeppelin
   SUCCESSFUL_STATUS_CODES = (200..299)
   JSON_HEADERS = { 'Content-Type' => 'application/json' }
   
-  # The connection to https://go.urbanairship.com.
+  # The connection to `https://go.urbanairship.com`.
   attr_reader :connection
   
   # Creates a new client.
