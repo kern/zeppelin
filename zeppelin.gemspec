@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email       = ['alex@kernul.com']
   s.homepage    = 'https://github.com/CapnKernul/zeppelin'
   s.summary     = %q{Urban Airship library for Ruby}
-  s.description = %q{Ruby client for the Urban Airship RESTful API}
+  s.description = %q{Ruby client for the Urban Airship Push Notification API}
   
   s.rubyforge_project = 'zeppelin'
   

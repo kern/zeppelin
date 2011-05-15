@@ -2,6 +2,11 @@ require 'faraday'
 require 'yajl'
 require 'time'
 
+# A very tiny Urban Airship Push Notification API client.
+# 
+# Provides thin wrappers around API calls to the most common API tasks. For more
+# information on how the requests and responses are formatted, visit the [Urban
+# Airship Push Notification API docs](http://urbanairship.com/docs/push.html).
 class Zeppelin
   BASE_URI = 'https://go.urbanairship.com'
   PUSH_URI = '/api/push/'
@@ -10,8 +15,14 @@ class Zeppelin
   SUCCESSFUL_STATUS_CODES = (200..299)
   JSON_HEADERS = { 'Content-Type' => 'application/json' }
   
+  # The connection to https://go.urbanairship.com.
   attr_reader :connection
   
+  # Creates a new client.
+  # 
+  # @param [String] application_key your Urban Airship Application Key
+  # @param [String] application_master_secret your Urban Airship Application
+  #   Master Secret
   def initialize(application_key, application_master_secret)
     @connection = Faraday::Connection.new(BASE_URI) do |builder|
       builder.request :json
@@ -21,6 +32,11 @@ class Zeppelin
     @connection.basic_auth(application_key, application_master_secret)
   end
   
+  # Registers a device token.
+  # 
+  # @param [String] device_token
+  # @param [Hash] payload the payload to send during registration
+  # @return [Boolean] whether or not the registration was successful
   def register_device_token(device_token, payload = {})
     uri = device_token_uri(device_token)
     
@@ -33,31 +49,57 @@ class Zeppelin
     successful?(response)
   end
   
+  # Retrieves information on a device token.
+  # 
+  # @param [String] device_token
+  # @return [Hash, nil]
   def device_token(device_token)
     response = @connection.get(device_token_uri(device_token))
     successful?(response) ? Yajl::Parser.parse(response.body) : nil
   end
   
+  # Deletes a device token.
+  # 
+  # @param [String] device_token
+  # @return [Boolean] whether or not the deletion was successful
   def delete_device_token(device_token)
     response = @connection.delete(device_token_uri(device_token))
     successful?(response)
   end
   
+  # Pushes a message.
+  # 
+  # @param [Hash] payload the payload of the message
+  # @return [Boolean] whether or not pushing the message was successful
   def push(payload)
     response = @connection.post(PUSH_URI, payload, JSON_HEADERS)
     successful?(response)
   end
   
+  # Batch pushes multiple messages.
+  # 
+  # @param [<Hash>] payload the payloads of each message
+  # @return [Boolean] whether or not pushing the messages was successful
   def batch_push(*payload)
     response = @connection.post(BATCH_PUSH_URI, payload, JSON_HEADERS)
     successful?(response)
   end
   
+  # Broadcasts a message.
+  # 
+  # @param [Hash] payload the payload of the message
+  # @return [Boolean] whether or not broadcasting the message was successful
   def broadcast(payload)
     response = @connection.post(BROADCAST_URI, payload, JSON_HEADERS)
     successful?(response)
   end
   
+  # Retrieves feedback on device tokens.
+  # 
+  # This is useful for removing inactive device tokens for the database.
+  # 
+  # @param [Time] since the time to retrieve inactive tokens from
+  # @return [Hash, nil]
   def feedback(since)
     response = @connection.get(feedback_uri(since))
     successful?(response) ? Yajl::Parser.parse(response.body) : nil
