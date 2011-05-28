@@ -105,6 +105,85 @@ class ZeppelinTest < Zeppelin::TestCase
     refute response
   end
   
+  test '#register_apid without a payload' do
+    stub_requests @client.connection do |stub|
+      stub.put("/api/apids/#{@apid}") do [201, {}, '']
+      end
+    end
+    
+    response = @client.register_apid(@apid)
+    assert response
+  end
+  
+  test '#register_apid an already registered APID' do
+    stub_requests @client.connection do |stub|
+      stub.put("/api/apids/#{@apid}") do
+        [200, {}, '']
+      end
+    end
+    
+    response = @client.register_apid(@apid)
+    assert response
+  end
+  
+  test '#register_apid with payload' do
+    payload = { :alias => 'CapnKernul' }
+    
+    stub_requests @client.connection do |stub|
+      stub.put("/api/apids/#{@apid}", Yajl::Encoder.encode(payload)) do
+        [200, {}, '']
+      end
+    end
+    
+    response = @client.register_apid(@apid, payload)
+    assert response
+  end
+  
+  test '#register_apid with an error' do
+    stub_requests @client.connection do |stub|
+      stub.put("/api/apids/#{@apid}", nil) do
+        [500, {}, '']
+      end
+    end
+    
+    response = @client.register_apid(@apid)
+    refute response
+  end
+  
+  test '#apid' do
+    response_body = { 'foo' => 'bar' }
+    stub_requests @client.connection do |stub|
+      stub.get("/api/apids/#{@apid}") do
+        [200, {}, Yajl::Encoder.encode(response_body)]
+      end
+    end
+    
+    response = @client.apid(@apid)
+    assert_equal response_body, response
+  end
+  
+  test '#delete_apid with a valid APID' do
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/apids/#{@apid}") do
+        [204, {}, '']
+      end
+    end
+    
+    response = @client.delete_apid(@apid)
+    assert response
+  end
+  
+  test '#delete_apid with an unknown APID' do
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/apids/#{@apid}") do
+        [404, {}, '']
+      end
+    end
+    
+    response = @client.delete_apid(@apid)
+    refute response
+  end
+  
   test '#push with a valid payload' do
     payload = {
       :device_tokens => [@device_token],
