@@ -67,6 +67,41 @@ class Zeppelin
     successful?(response)
   end
   
+  # Registers an APID.
+  # 
+  # @param [String] apid
+  # @param [Hash] payload the payload to send during registration
+  # @return [Boolean] whether or not the registration was successful
+  def register_apid(apid, payload = {})
+    uri = apid_uri(apid)
+    
+    if payload.empty?
+      response = @connection.put(uri)
+    else
+      response = @connection.put(uri, payload, JSON_HEADERS)
+    end
+    
+    successful?(response)
+  end
+  
+  # Retrieves information on an APID.
+  # 
+  # @param [String] apid
+  # @return [Hash, nil]
+  def apid(apid)
+    response = @connection.get(apid_uri(apid))
+    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+  end
+  
+  # Deletes an APID.
+  # 
+  # @param [String] apid
+  # @return [Boolean] whether or not the deletion was successful
+  def delete_apid(apid)
+    response = @connection.delete(apid_uri(apid))
+    successful?(response)
+  end
+  
   # Pushes a message.
   # 
   # @param [Hash] payload the payload of the message
@@ -109,6 +144,10 @@ class Zeppelin
   
   def device_token_uri(device_token)
     "/api/device_tokens/#{device_token}"
+  end
+  
+  def apid_uri(apid)
+    "/api/apids/#{apid}"
   end
   
   def feedback_uri(since)
