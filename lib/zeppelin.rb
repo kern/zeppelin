@@ -18,19 +18,19 @@ class Zeppelin
   APPLE_REG_EXP = /^[A-Z0-9]{64}$/
 
   # The connection to `https://go.urbanairship.com`.
-  attr_reader :connection
+  attr_reader :connection, :logger
 
   # Creates a new client.
   #
   # @param [String] application_key your Urban Airship Application Key
   # @param [String] application_master_secret your Urban Airship Application
   #   Master Secret
-  def initialize(application_key, application_master_secret)
+  def initialize(application_key, application_master_secret, logger = nil)
     @connection = Faraday::Connection.new(BASE_URI) do |builder|
       builder.request :json
       builder.adapter :net_http
     end
-
+    @logger = logger
     @connection.basic_auth(application_key, application_master_secret)
   end
 
@@ -47,7 +47,7 @@ class Zeppelin
     else
       response = @connection.put(uri, payload, JSON_HEADERS)
     end
-
+    logger.info("register_device_token response: #{response.inspect}") if logger
     successful?(response)
   end
 
@@ -75,6 +75,7 @@ class Zeppelin
   # @return [Boolean] whether or not pushing the message was successful
   def push(payload)
     response = @connection.post(PUSH_URI, payload, JSON_HEADERS)
+    logger.info("push response: #{response.inspect}") if logger
     successful?(response)
   end
 
