@@ -303,6 +303,19 @@ class ZeppelinTest < Zeppelin::TestCase
     response = @client.feedback(since)
     assert_nil response
   end
+
+  test '#add_tag' do
+    tag_name = 'chunky.bacon'
+
+    stub_requests @client.connection do |stub|
+      stub.put("/api/tags/#{tag_name}") do
+        [201, {}, '']
+      end
+    end
+
+    response = @client.add_tag(tag_name)
+    assert response
+  end
   
   def stub_requests(connection, &block)
     connection.builder.handlers.delete(Faraday::Adapter::NetHttp)

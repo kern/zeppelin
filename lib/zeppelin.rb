@@ -139,6 +139,16 @@ class Zeppelin
     response = @connection.get(feedback_uri(since))
     successful?(response) ? Yajl::Parser.parse(response.body) : nil
   end
+
+  # Creates a tag that is not associated with any device
+  #
+  # @param [#to_s] name The name of the tag to add
+  #
+  # @return [Boolean] whether or not the request was successful
+  def add_tag(name)
+    response = @connection.put(tag_uri(name))
+    successful?(response)
+  end
   
   private
   
@@ -152,6 +162,10 @@ class Zeppelin
   
   def feedback_uri(since)
     "/api/device_tokens/feedback/?since=#{since.utc.iso8601}"
+  end
+
+  def tag_uri(name)
+    "/api/tags/#{name}"
   end
   
   def successful?(response)
