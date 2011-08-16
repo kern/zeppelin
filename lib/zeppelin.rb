@@ -149,6 +149,17 @@ class Zeppelin
     response = @connection.put(tag_uri(name))
     successful?(response)
   end
+
+  # Removes a tag from the service
+  #
+  # @param [#to_s] name The name of the tag to remove
+  #
+  # @return [Boolean] true when the request was successful. Note that this
+  #   method will return false if the tag has already been removed.
+  def remove_tag(name)
+    response = @connection.delete(tag_uri(name))
+    successful?(response)
+  end
   
   private
   
