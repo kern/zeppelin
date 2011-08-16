@@ -356,6 +356,34 @@ class ZeppelinTest < Zeppelin::TestCase
     response = @client.add_tag_to_device(device_token, tag_name)
     assert response
   end
+
+  test '#remove_tag_from_device successfully' do
+    tag_name = 'martin.fowler'
+    device_token = 'DEADBEEF'
+
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/device_tokens/#{device_token}/tags/#{tag_name}") do
+        [204, {}, 'No Content']
+      end
+    end
+
+    response = @client.remove_tag_from_device(device_token, tag_name)
+    assert response
+  end
+
+  test '#remove_tag_from_device unsuccessfully' do
+    tag_name = 'martin.fowler'
+    device_token = 'DEADBEEF'
+
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/device_tokens/#{device_token}/tags/#{tag_name}") do
+        [404, {}, 'Not Found']
+      end
+    end
+
+    response = @client.remove_tag_from_device(device_token, tag_name)
+    refute response
+  end
   
   def stub_requests(connection, &block)
     connection.builder.handlers.delete(Faraday::Adapter::NetHttp)

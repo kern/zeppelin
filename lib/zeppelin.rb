@@ -171,6 +171,17 @@ class Zeppelin
     response = @connection.put(device_tag_uri(device_token, tag_name))
     successful?(response)
   end
+
+  # @param [String] device_token
+  #
+  # @param [#to_s] tag_name
+  #
+  # @return [Boolean] whether or not a tag was successfully dissociated from
+  #   a device
+  def remove_tag_from_device(device_token, tag_name)
+    response = @connection.delete(device_tag_uri(device_token, tag_name))
+    successful?(response)
+  end
   
   private
   
