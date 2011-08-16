@@ -160,6 +160,17 @@ class Zeppelin
     response = @connection.delete(tag_uri(name))
     successful?(response)
   end
+
+  # @param [String] device_token
+  #
+  # @param [#to_s] tag_name
+  #
+  # @return [Boolean] whether or not a tag was successfully associated with
+  #   a device
+  def add_tag_to_device(device_token, tag_name)
+    response = @connection.put(device_tag_uri(device_token, tag_name))
+    successful?(response)
+  end
   
   private
   
@@ -177,6 +188,10 @@ class Zeppelin
 
   def tag_uri(name)
     "/api/tags/#{name}"
+  end
+
+  def device_tag_uri(device_token, tag_name)
+    device_token_uri(device_token) + "/tags/#{tag_name}"
   end
   
   def successful?(response)

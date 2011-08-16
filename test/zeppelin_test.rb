@@ -342,6 +342,20 @@ class ZeppelinTest < Zeppelin::TestCase
     response = @client.remove_tag(tag_name)
     refute response
   end
+
+  test '#add_tag_to_device' do
+    tag_name = 'radio.head'
+    device_token = 'CAFEBABE'
+
+    stub_requests @client.connection do |stub|
+      stub.put("/api/device_tokens/#{device_token}/tags/#{tag_name}") do
+        [201, {}, 'Created']
+      end
+    end
+
+    response = @client.add_tag_to_device(device_token, tag_name)
+    assert response
+  end
   
   def stub_requests(connection, &block)
     connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
