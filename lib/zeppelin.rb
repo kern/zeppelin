@@ -140,6 +140,14 @@ class Zeppelin
     successful?(response) ? Yajl::Parser.parse(response.body) : nil
   end
 
+  # Retrieve all tags on the service
+  #
+  # @return [Hash, nil]
+  def tags
+    response = @connection.get(tag_uri(nil))
+    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+  end
+
   # Creates a tag that is not associated with any device
   #
   # @param [#to_s] name The name of the tag to add

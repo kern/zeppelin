@@ -304,6 +304,19 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_nil response
   end
 
+  test '#tags' do
+    response_body = { 'tags' => ['green', 'eggs'] }
+
+    stub_requests @client.connection do |stub|
+      stub.get('/api/tags/') do
+        [200, {}, Yajl::Encoder.encode(response_body)]
+      end
+    end
+
+    response = @client.tags
+    assert_equal response_body, response
+  end
+
   test '#add_tag' do
     tag_name = 'chunky.bacon'
 
