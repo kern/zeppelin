@@ -317,6 +317,20 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_equal response_body, response
   end
 
+  test '#modify_device_token_on_tag' do
+    tag_name = 'jimmy.page'
+    device_token = 'CAFEBABE'
+
+    stub_requests @client.connection do |stub|
+      stub.post("/api/tags/#{tag_name}") do
+        [200, {}, 'OK']
+      end
+    end
+
+    response = @client.modify_device_tokens_on_tag(tag_name, { 'device_tokens' => { 'add' => [device_token] } })
+    assert response
+  end
+
   test '#add_tag' do
     tag_name = 'chunky.bacon'
 

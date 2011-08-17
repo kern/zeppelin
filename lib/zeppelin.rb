@@ -148,6 +148,17 @@ class Zeppelin
     successful?(response) ? parse(response.body) : nil
   end
 
+  # Modifies device tokens associated with a tag.
+  #
+  # @param [String] tag The name of the tag to modify tag associations on
+  #
+  # @param [Hash] payload
+  #
+  # @see http://urbanairship.com/docs/tags.html#modifying-device-tokens-on-a-tag
+  def modify_device_tokens_on_tag(tag_name, payload = {})
+    @connection.post(tag_uri(tag_name), payload, JSON_HEADERS)
+  end
+
   # Creates a tag that is not associated with any device
   #
   # @param [#to_s] name The name of the tag to add
