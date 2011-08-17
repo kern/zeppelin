@@ -171,6 +171,14 @@ class Zeppelin
 
   # @param [String] device_token
   #
+  # @return [Hash, nil]
+  def device_tags(device_token)
+    response = @connection.get(device_tag_uri(device_token, nil))
+    successful?(response) ? parse(response.body) : nil
+  end
+
+  # @param [String] device_token
+  #
   # @param [#to_s] tag_name
   #
   # @return [Boolean] whether or not a tag was successfully associated with

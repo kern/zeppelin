@@ -356,6 +356,33 @@ class ZeppelinTest < Zeppelin::TestCase
     refute response
   end
 
+  test '#device_tags with existing device' do
+    device_token = 'CAFEBABE'
+    response_body = { 'tags' => ['tag1', 'some_tag'] }
+
+    stub_requests @client.connection do |stub|
+      stub.get("/api/device_tokens/#{device_token}/tags/") do
+        [200, {}, Yajl::Encoder.encode(response_body)]
+      end
+    end
+
+    response = @client.device_tags(device_token)
+    assert_equal response_body, response
+  end
+
+  test '#device_tags with non-existant device' do
+    device_token = 'CAFEBABE'
+
+    stub_requests @client.connection do |stub|
+      stub.get("/api/device_tokens/#{device_token}/tags/") do
+        [404, {}, 'Not Found']
+      end
+    end
+
+    response = @client.device_tags(device_token)
+    refute response
+  end
+
   test '#add_tag_to_device' do
     tag_name = 'radio.head'
     device_token = 'CAFEBABE'
