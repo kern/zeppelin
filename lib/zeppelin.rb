@@ -55,7 +55,7 @@ class Zeppelin
   # @return [Hash, nil]
   def device_token(device_token)
     response = @connection.get(device_token_uri(device_token))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
   end
   
   # Deletes a device token.
@@ -90,7 +90,7 @@ class Zeppelin
   # @return [Hash, nil]
   def apid(apid)
     response = @connection.get(apid_uri(apid))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
   end
   
   # Deletes an APID.
@@ -137,7 +137,7 @@ class Zeppelin
   # @return [Hash, nil]
   def feedback(since)
     response = @connection.get(feedback_uri(since))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
   end
 
   # Retrieve all tags on the service
@@ -145,7 +145,7 @@ class Zeppelin
   # @return [Hash, nil]
   def tags
     response = @connection.get(tag_uri(nil))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
   end
 
   # Creates a tag that is not associated with any device
@@ -215,6 +215,10 @@ class Zeppelin
   
   def successful?(response)
     SUCCESSFUL_STATUS_CODES.include?(response.status)
+  end
+
+  def parse(json)
+    Yajl::Parser.parse(json)
   end
 end
 
