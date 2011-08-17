@@ -139,6 +139,49 @@ class Zeppelin
     response = @connection.get(feedback_uri(since))
     successful?(response) ? Yajl::Parser.parse(response.body) : nil
   end
+
+  # Creates a tag that is not associated with any device
+  #
+  # @param [#to_s] name The name of the tag to add
+  #
+  # @return [Boolean] whether or not the request was successful
+  def add_tag(name)
+    response = @connection.put(tag_uri(name))
+    successful?(response)
+  end
+
+  # Removes a tag from the service
+  #
+  # @param [#to_s] name The name of the tag to remove
+  #
+  # @return [Boolean] true when the request was successful. Note that this
+  #   method will return false if the tag has already been removed.
+  def remove_tag(name)
+    response = @connection.delete(tag_uri(name))
+    successful?(response)
+  end
+
+  # @param [String] device_token
+  #
+  # @param [#to_s] tag_name
+  #
+  # @return [Boolean] whether or not a tag was successfully associated with
+  #   a device
+  def add_tag_to_device(device_token, tag_name)
+    response = @connection.put(device_tag_uri(device_token, tag_name))
+    successful?(response)
+  end
+
+  # @param [String] device_token
+  #
+  # @param [#to_s] tag_name
+  #
+  # @return [Boolean] whether or not a tag was successfully dissociated from
+  #   a device
+  def remove_tag_from_device(device_token, tag_name)
+    response = @connection.delete(device_tag_uri(device_token, tag_name))
+    successful?(response)
+  end
   
   private
   
@@ -152,6 +195,14 @@ class Zeppelin
   
   def feedback_uri(since)
     "/api/device_tokens/feedback/?since=#{since.utc.iso8601}"
+  end
+
+  def tag_uri(name)
+    "/api/tags/#{name}"
+  end
+
+  def device_tag_uri(device_token, tag_name)
+    device_token_uri(device_token) + "/tags/#{tag_name}"
   end
   
   def successful?(response)

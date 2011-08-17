@@ -303,6 +303,87 @@ class ZeppelinTest < Zeppelin::TestCase
     response = @client.feedback(since)
     assert_nil response
   end
+
+  test '#add_tag' do
+    tag_name = 'chunky.bacon'
+
+    stub_requests @client.connection do |stub|
+      stub.put("/api/tags/#{tag_name}") do
+        [201, {}, '']
+      end
+    end
+
+    response = @client.add_tag(tag_name)
+    assert response
+  end
+
+  test '#remove_tag with an existing tag' do
+    tag_name = 'cats.pajamas'
+
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/tags/#{tag_name}") do
+        [204, {}, '']
+      end
+    end
+
+    response = @client.remove_tag(tag_name)
+    assert response
+  end
+
+  test '#remove_tag with non-existant tag' do
+    tag_name = 'cats.pajamas'
+
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/tags/#{tag_name}") do
+        [404, {}, 'Not Found']
+      end
+    end
+
+    response = @client.remove_tag(tag_name)
+    refute response
+  end
+
+  test '#add_tag_to_device' do
+    tag_name = 'radio.head'
+    device_token = 'CAFEBABE'
+
+    stub_requests @client.connection do |stub|
+      stub.put("/api/device_tokens/#{device_token}/tags/#{tag_name}") do
+        [201, {}, 'Created']
+      end
+    end
+
+    response = @client.add_tag_to_device(device_token, tag_name)
+    assert response
+  end
+
+  test '#remove_tag_from_device successfully' do
+    tag_name = 'martin.fowler'
+    device_token = 'DEADBEEF'
+
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/device_tokens/#{device_token}/tags/#{tag_name}") do
+        [204, {}, 'No Content']
+      end
+    end
+
+    response = @client.remove_tag_from_device(device_token, tag_name)
+    assert response
+  end
+
+  test '#remove_tag_from_device unsuccessfully' do
+    tag_name = 'martin.fowler'
+    device_token = 'DEADBEEF'
+
+    stub_requests @client.connection do |stub|
+      stub.delete("/api/device_tokens/#{device_token}/tags/#{tag_name}") do
+        [404, {}, 'Not Found']
+      end
+    end
+
+    response = @client.remove_tag_from_device(device_token, tag_name)
+    refute response
+  end
   
   def stub_requests(connection, &block)
     connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
