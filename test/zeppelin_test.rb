@@ -15,6 +15,12 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_equal 'Basic YXBwIGtleTphcHAgbWFzdGVyIHNlY3JldA==', @client.connection.headers['Authorization']
   end
   
+  test '#initialize with custom options' do
+    ssl_options = { :ca_path => '/dev/null' }
+    @client = Zeppelin.new('app key', 'app master secret', :ssl => ssl_options)
+    assert_equal(ssl_options, @client.connection.ssl)
+  end
+  
   test '#register_device_token without a payload' do
     stub_requests @client.connection do |stub|
       stub.put("/api/device_tokens/#{@device_token}") do [201, {}, '']

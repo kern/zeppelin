@@ -23,8 +23,8 @@ class Zeppelin
   # @param [String] application_key your Urban Airship Application Key
   # @param [String] application_master_secret your Urban Airship Application
   #   Master Secret
-  def initialize(application_key, application_master_secret)
-    @connection = Faraday::Connection.new(BASE_URI) do |builder|
+  def initialize(application_key, application_master_secret, options = {})
+    @connection = Faraday::Connection.new(BASE_URI, options) do |builder|
       builder.request :json
       builder.adapter :net_http
     end
