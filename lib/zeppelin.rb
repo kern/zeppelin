@@ -23,8 +23,8 @@ class Zeppelin
   # @param [String] application_key your Urban Airship Application Key
   # @param [String] application_master_secret your Urban Airship Application
   #   Master Secret
-  def initialize(application_key, application_master_secret)
-    @connection = Faraday::Connection.new(BASE_URI) do |builder|
+  def initialize(application_key, application_master_secret, options = {})
+    @connection = Faraday::Connection.new(BASE_URI, options) do |builder|
       builder.request :json
       builder.adapter :net_http
     end
@@ -55,7 +55,7 @@ class Zeppelin
   # @return [Hash, nil]
   def device_token(device_token)
     response = @connection.get(device_token_uri(device_token))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
   end
   
   # Deletes a device token.
@@ -90,7 +90,7 @@ class Zeppelin
   # @return [Hash, nil]
   def apid(apid)
     response = @connection.get(apid_uri(apid))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
   end
   
   # Deletes an APID.
@@ -137,7 +137,26 @@ class Zeppelin
   # @return [Hash, nil]
   def feedback(since)
     response = @connection.get(feedback_uri(since))
-    successful?(response) ? Yajl::Parser.parse(response.body) : nil
+    successful?(response) ? parse(response.body) : nil
+  end
+
+  # Retrieve all tags on the service
+  #
+  # @return [Hash, nil]
+  def tags
+    response = @connection.get(tag_uri(nil))
+    successful?(response) ? parse(response.body) : nil
+  end
+
+  # Modifies device tokens associated with a tag.
+  #
+  # @param [String] tag The name of the tag to modify tag associations on
+  #
+  # @param [Hash] payload
+  #
+  # @see http://urbanairship.com/docs/tags.html#modifying-device-tokens-on-a-tag
+  def modify_device_tokens_on_tag(tag_name, payload = {})
+    @connection.post(tag_uri(tag_name), payload, JSON_HEADERS)
   end
 
   # Creates a tag that is not associated with any device
@@ -159,6 +178,14 @@ class Zeppelin
   def remove_tag(name)
     response = @connection.delete(tag_uri(name))
     successful?(response)
+  end
+
+  # @param [String] device_token
+  #
+  # @return [Hash, nil]
+  def device_tags(device_token)
+    response = @connection.get(device_tag_uri(device_token, nil))
+    successful?(response) ? parse(response.body) : nil
   end
 
   # @param [String] device_token
@@ -207,6 +234,10 @@ class Zeppelin
   
   def successful?(response)
     SUCCESSFUL_STATUS_CODES.include?(response.status)
+  end
+
+  def parse(json)
+    Yajl::Parser.parse(json)
   end
 end
 

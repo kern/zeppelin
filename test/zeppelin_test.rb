@@ -15,6 +15,12 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_equal 'Basic YXBwIGtleTphcHAgbWFzdGVyIHNlY3JldA==', @client.connection.headers['Authorization']
   end
   
+  test '#initialize with custom options' do
+    ssl_options = { :ca_path => '/dev/null' }
+    @client = Zeppelin.new('app key', 'app master secret', :ssl => ssl_options)
+    assert_equal(ssl_options, @client.connection.ssl)
+  end
+  
   test '#register_device_token without a payload' do
     stub_requests @client.connection do |stub|
       stub.put("/api/device_tokens/#{@device_token}") do [201, {}, '']
@@ -304,6 +310,33 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_nil response
   end
 
+  test '#tags' do
+    response_body = { 'tags' => ['green', 'eggs'] }
+
+    stub_requests @client.connection do |stub|
+      stub.get('/api/tags/') do
+        [200, {}, Yajl::Encoder.encode(response_body)]
+      end
+    end
+
+    response = @client.tags
+    assert_equal response_body, response
+  end
+
+  test '#modify_device_token_on_tag' do
+    tag_name = 'jimmy.page'
+    device_token = 'CAFEBABE'
+
+    stub_requests @client.connection do |stub|
+      stub.post("/api/tags/#{tag_name}") do
+        [200, {}, 'OK']
+      end
+    end
+
+    response = @client.modify_device_tokens_on_tag(tag_name, { 'device_tokens' => { 'add' => [device_token] } })
+    assert response
+  end
+
   test '#add_tag' do
     tag_name = 'chunky.bacon'
 
@@ -340,6 +373,33 @@ class ZeppelinTest < Zeppelin::TestCase
     end
 
     response = @client.remove_tag(tag_name)
+    refute response
+  end
+
+  test '#device_tags with existing device' do
+    device_token = 'CAFEBABE'
+    response_body = { 'tags' => ['tag1', 'some_tag'] }
+
+    stub_requests @client.connection do |stub|
+      stub.get("/api/device_tokens/#{device_token}/tags/") do
+        [200, {}, Yajl::Encoder.encode(response_body)]
+      end
+    end
+
+    response = @client.device_tags(device_token)
+    assert_equal response_body, response
+  end
+
+  test '#device_tags with non-existant device' do
+    device_token = 'CAFEBABE'
+
+    stub_requests @client.connection do |stub|
+      stub.get("/api/device_tokens/#{device_token}/tags/") do
+        [404, {}, 'Not Found']
+      end
+    end
+
+    response = @client.device_tags(device_token)
     refute response
   end
 
