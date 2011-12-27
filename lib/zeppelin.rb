@@ -12,6 +12,7 @@ class Zeppelin
   PUSH_URI = '/api/push/'
   BATCH_PUSH_URI = '/api/push/batch/'
   BROADCAST_URI = '/api/push/broadcast/'
+  ALL_APIDS_URI = '/api/apids/'
   SUCCESSFUL_STATUS_CODES = (200..299)
   JSON_HEADERS = { 'Content-Type' => 'application/json' }
   
@@ -100,6 +101,26 @@ class Zeppelin
   def delete_apid(apid)
     response = @connection.delete(apid_uri(apid))
     successful?(response)
+  end
+  
+  # Retrieves APID listings.  It will make multiple requests to paginate all APIDs if necessary.
+  # 
+  # @return [Hash, nil]
+  def apids
+    entries = []
+    next_uri = ALL_APIDS_URI
+    
+    until next_uri.nil? do
+      response = @connection.get(next_uri)
+      return nil unless successful?(response)
+      
+      page_entries = parse(response.body)
+      
+      entries = entries.concat(page_entries['apids'])
+      next_uri = page_entries['next_page']
+    end
+    
+    { "apids" => entries }
   end
   
   # Pushes a message.

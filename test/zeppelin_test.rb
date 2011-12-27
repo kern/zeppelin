@@ -445,6 +445,40 @@ class ZeppelinTest < Zeppelin::TestCase
     refute response
   end
   
+  test '#apids ' do
+    response_body1 = {
+      "apids"=> [{
+        "apid" => "example apid",
+        "active" => true,
+        "alias" => "",
+        "tags" => []
+      }],
+      "next_page" => "https://go.urbanairship.com/api/apids/?page=2"
+    }
+    
+    response_body2 = {
+      "apids"=> [{
+        "apid" => "second example apid",
+        "active" => true,
+        "alias" => "",
+        "tags" => []
+      }],
+      "next_page" => nil
+    }
+    
+    stub_requests @client.connection do |stub|
+      stub.get("/api/apids/") do
+        [200, {}, Yajl::Encoder.encode(response_body1)]
+      end
+      stub.get("/api/apids/?page=2") do
+        [200, {}, Yajl::Encoder.encode(response_body2)]
+      end
+    end
+    
+    response = @client.apids
+    assert_equal({"apids" => [response_body1['apids'][0],response_body2['apids'][0]]}, response)
+  end
+  
   def stub_requests(connection, &block)
     connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
     connection.adapter(:test, &block)
