@@ -12,7 +12,6 @@ class Zeppelin
   PUSH_URI = '/api/push/'
   BATCH_PUSH_URI = '/api/push/batch/'
   BROADCAST_URI = '/api/push/broadcast/'
-  SUCCESSFUL_STATUS_CODES = (200..299)
   JSON_HEADERS = { 'Content-Type' => 'application/json' }
 
   # The connection to `https://go.urbanairship.com`.
@@ -46,7 +45,7 @@ class Zeppelin
       response = @connection.put(uri, payload, JSON_HEADERS)
     end
 
-    successful?(response)
+    response.success?
   end
 
   # Retrieves information on a device token.
@@ -55,7 +54,7 @@ class Zeppelin
   # @return [Hash, nil]
   def device_token(device_token)
     response = @connection.get(device_token_uri(device_token))
-    successful?(response) ? parse(response.body) : nil
+    response.success? ? parse(response.body) : nil
   end
 
   # Deletes a device token.
@@ -64,7 +63,7 @@ class Zeppelin
   # @return [Boolean] whether or not the deletion was successful
   def delete_device_token(device_token)
     response = @connection.delete(device_token_uri(device_token))
-    successful?(response)
+    response.success?
   end
 
   # Registers an APID.
@@ -81,7 +80,7 @@ class Zeppelin
       response = @connection.put(uri, payload, JSON_HEADERS)
     end
 
-    successful?(response)
+    response.success?
   end
 
   # Retrieves information on an APID.
@@ -90,7 +89,7 @@ class Zeppelin
   # @return [Hash, nil]
   def apid(apid)
     response = @connection.get(apid_uri(apid))
-    successful?(response) ? parse(response.body) : nil
+    response.success? ? parse(response.body) : nil
   end
 
   # Deletes an APID.
@@ -99,7 +98,7 @@ class Zeppelin
   # @return [Boolean] whether or not the deletion was successful
   def delete_apid(apid)
     response = @connection.delete(apid_uri(apid))
-    successful?(response)
+    response.success?
   end
 
   # Pushes a message.
@@ -108,7 +107,7 @@ class Zeppelin
   # @return [Boolean] whether or not pushing the message was successful
   def push(payload)
     response = @connection.post(PUSH_URI, payload, JSON_HEADERS)
-    successful?(response)
+    response.success?
   end
 
   # Batch pushes multiple messages.
@@ -117,7 +116,7 @@ class Zeppelin
   # @return [Boolean] whether or not pushing the messages was successful
   def batch_push(*payload)
     response = @connection.post(BATCH_PUSH_URI, payload, JSON_HEADERS)
-    successful?(response)
+    response.success?
   end
 
   # Broadcasts a message.
@@ -126,7 +125,7 @@ class Zeppelin
   # @return [Boolean] whether or not broadcasting the message was successful
   def broadcast(payload)
     response = @connection.post(BROADCAST_URI, payload, JSON_HEADERS)
-    successful?(response)
+    response.success?
   end
 
   # Retrieves feedback on device tokens.
@@ -137,7 +136,7 @@ class Zeppelin
   # @return [Hash, nil]
   def feedback(since)
     response = @connection.get(feedback_uri(since))
-    successful?(response) ? parse(response.body) : nil
+    response.success? ? parse(response.body) : nil
   end
 
   # Retrieve all tags on the service
@@ -145,7 +144,7 @@ class Zeppelin
   # @return [Hash, nil]
   def tags
     response = @connection.get(tag_uri(nil))
-    successful?(response) ? parse(response.body) : nil
+    response.success? ? parse(response.body) : nil
   end
 
   # Modifies device tokens associated with a tag.
@@ -166,7 +165,7 @@ class Zeppelin
   # @return [Boolean] whether or not the request was successful
   def add_tag(name)
     response = @connection.put(tag_uri(name))
-    successful?(response)
+    response.success?
   end
 
   # Removes a tag from the service
@@ -177,7 +176,7 @@ class Zeppelin
   #   method will return false if the tag has already been removed.
   def remove_tag(name)
     response = @connection.delete(tag_uri(name))
-    successful?(response)
+    response.success?
   end
 
   # @param [String] device_token
@@ -185,7 +184,7 @@ class Zeppelin
   # @return [Hash, nil]
   def device_tags(device_token)
     response = @connection.get(device_tag_uri(device_token, nil))
-    successful?(response) ? parse(response.body) : nil
+    response.success? ? parse(response.body) : nil
   end
 
   # @param [String] device_token
@@ -196,7 +195,7 @@ class Zeppelin
   #   a device
   def add_tag_to_device(device_token, tag_name)
     response = @connection.put(device_tag_uri(device_token, tag_name))
-    successful?(response)
+    response.success?
   end
 
   # @param [String] device_token
@@ -207,7 +206,7 @@ class Zeppelin
   #   a device
   def remove_tag_from_device(device_token, tag_name)
     response = @connection.delete(device_tag_uri(device_token, tag_name))
-    successful?(response)
+    response.success?
   end
 
   private
@@ -230,10 +229,6 @@ class Zeppelin
 
   def device_tag_uri(device_token, tag_name)
     device_token_uri(device_token) + "/tags/#{tag_name}"
-  end
-
-  def successful?(response)
-    SUCCESSFUL_STATUS_CODES.include?(response.status)
   end
 
   def parse(json)
