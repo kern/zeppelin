@@ -1,5 +1,4 @@
 require 'faraday'
-require 'yajl'
 require 'time'
 
 # A very tiny Urban Airship Push Notification API client.
@@ -214,6 +213,8 @@ class Zeppelin
     conn = Faraday::Connection.new(BASE_URI, @options) do |builder|
       builder.request :json
 
+      builder.use Zeppelin::JsonParserMiddleware
+
       builder.adapter :net_http
     end
 
@@ -241,10 +242,7 @@ class Zeppelin
   def device_tag_uri(device_token, tag_name)
     device_token_uri(device_token) + "/tags/#{tag_name}"
   end
-
-  def parse(json)
-    Yajl::Parser.parse(json)
-  end
 end
 
+require 'zeppelin/json_parser_middleware'
 require 'zeppelin/version'
