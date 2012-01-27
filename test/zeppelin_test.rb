@@ -12,6 +12,7 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_equal 'go.urbanairship.com', @client.connection.host
     assert_includes @client.connection.builder.handlers, Faraday::Adapter::NetHttp
     assert_includes @client.connection.builder.handlers, Faraday::Request::JSON
+    assert_includes @client.connection.builder.handlers, Zeppelin::JsonParserMiddleware
     assert_equal 'Basic YXBwIGtleTphcHAgbWFzdGVyIHNlY3JldA==', @client.connection.headers['Authorization']
   end
   
