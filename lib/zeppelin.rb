@@ -217,7 +217,7 @@ class Zeppelin
     conn = Faraday::Connection.new(BASE_URI, @options) do |builder|
       builder.request :json
 
-      builder.use Zeppelin::JsonParserMiddleware
+      builder.use Zeppelin::Middleware::JsonParser
 
       builder.adapter :net_http
     end
@@ -248,5 +248,5 @@ class Zeppelin
   end
 end
 
-require 'zeppelin/json_parser_middleware'
+require 'zeppelin/middleware'
 require 'zeppelin/version'

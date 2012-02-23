@@ -30,7 +30,7 @@ describe Zeppelin do
 
     it { subject.connection.builder.handlers.should include(Faraday::Request::JSON) }
 
-    it { subject.connection.builder.handlers.should include(Zeppelin::JsonParserMiddleware) }
+    it { subject.connection.builder.handlers.should include(Zeppelin::Middleware::JsonParser) }
 
     it { subject.connection.headers['Authorization'].should eq('Basic YXBwIGtleTphcHAgbWFzdGVyIHNlY3JldA==') }
   end
