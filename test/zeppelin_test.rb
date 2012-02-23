@@ -12,6 +12,7 @@ class ZeppelinTest < Zeppelin::TestCase
     assert_equal 'go.urbanairship.com', @client.connection.host
     assert_includes @client.connection.builder.handlers, Faraday::Adapter::NetHttp
     assert_includes @client.connection.builder.handlers, Faraday::Request::JSON
+    assert_includes @client.connection.builder.handlers, Zeppelin::JsonParserMiddleware
     assert_equal 'Basic YXBwIGtleTphcHAgbWFzdGVyIHNlY3JldA==', @client.connection.headers['Authorization']
   end
   
@@ -70,7 +71,7 @@ class ZeppelinTest < Zeppelin::TestCase
     response_body = { 'foo' => 'bar' }
     stub_requests @client.connection do |stub|
       stub.get("/api/device_tokens/#{@device_token}") do
-        [200, {}, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
       end
     end
     
@@ -160,7 +161,7 @@ class ZeppelinTest < Zeppelin::TestCase
     response_body = { 'foo' => 'bar' }
     stub_requests @client.connection do |stub|
       stub.get("/api/apids/#{@apid}") do
-        [200, {}, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
       end
     end
     
@@ -289,7 +290,7 @@ class ZeppelinTest < Zeppelin::TestCase
     
     stub_requests @client.connection do |stub|
       stub.get('/api/device_tokens/feedback/?since=1970-01-01T00%3A00%3A00Z') do
-        [200, {}, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
       end
     end
     
@@ -315,7 +316,7 @@ class ZeppelinTest < Zeppelin::TestCase
 
     stub_requests @client.connection do |stub|
       stub.get('/api/tags/') do
-        [200, {}, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
       end
     end
 
@@ -382,7 +383,7 @@ class ZeppelinTest < Zeppelin::TestCase
 
     stub_requests @client.connection do |stub|
       stub.get("/api/device_tokens/#{device_token}/tags/") do
-        [200, {}, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
       end
     end
 
