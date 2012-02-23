@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.name        = 'zeppelin'
   s.version     = Zeppelin::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ['Alexander Kern']
-  s.email       = ['alex@kernul.com']
+  s.authors     = ['Alexander Kern', 'James Herdman']
+  s.email       = ['alex@kernul.com', 'james.herdman@me.com']
   s.homepage    = 'https://github.com/CapnKernul/zeppelin'
   s.summary     = %q{Urban Airship library for Ruby}
   s.description = %q{Ruby client for the Urban Airship Push Notification API}
