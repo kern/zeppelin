@@ -4,3 +4,6 @@
 --default-return  ""
 --title           "Zeppelin Documentation"
 --hide-void-return
+-
+Changelog.md
+LICENSE
