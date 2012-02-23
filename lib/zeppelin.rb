@@ -35,7 +35,10 @@ class Zeppelin
   #
   # @param [String] device_token
   # @param [Hash] payload the payload to send during registration
+  #
   # @return [Boolean] whether or not the registration was successful
+  #
+  # @raise [Zeppelin::ClientError] malformed request
   def register_device_token(device_token, payload = {})
     uri = device_token_uri(device_token)
 
@@ -52,6 +55,8 @@ class Zeppelin
   #
   # @param [String] device_token
   # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid device token provided
   def device_token(device_token)
     response = connection.get(device_token_uri(device_token))
     response.success? ? response.body : nil
@@ -60,7 +65,10 @@ class Zeppelin
   # Deletes a device token.
   #
   # @param [String] device_token
+  #
   # @return [Boolean] whether or not the deletion was successful
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid device token provided
   def delete_device_token(device_token)
     response = connection.delete(device_token_uri(device_token))
     response.success?
@@ -69,8 +77,12 @@ class Zeppelin
   # Registers an APID.
   #
   # @param [String] apid
+  #
   # @param [Hash] payload the payload to send during registration
+  #
   # @return [Boolean] whether or not the registration was successful
+  #
+  # @raise [Zeppelin::ClientError] invalid payload format
   def register_apid(apid, payload = {})
     uri = apid_uri(apid)
 
@@ -86,7 +98,10 @@ class Zeppelin
   # Retrieves information on an APID.
   #
   # @param [String] apid
+  #
   # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
   def apid(apid)
     response = connection.get(apid_uri(apid))
     response.success? ? response.body : nil
@@ -95,7 +110,10 @@ class Zeppelin
   # Deletes an APID.
   #
   # @param [String] apid
+  #
   # @return [Boolean] whether or not the deletion was successful
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
   def delete_apid(apid)
     response = connection.delete(apid_uri(apid))
     response.success?
@@ -104,7 +122,10 @@ class Zeppelin
   # Pushes a message.
   #
   # @param [Hash] payload the payload of the message
+  #
   # @return [Boolean] whether or not pushing the message was successful
+  #
+  # @raise [Zeppelin::ClientError] invalid payload format
   def push(payload)
     response = connection.post(PUSH_URI, payload, JSON_HEADERS)
     response.success?
@@ -113,7 +134,10 @@ class Zeppelin
   # Batch pushes multiple messages.
   #
   # @param [<Hash>] payload the payloads of each message
+  #
   # @return [Boolean] whether or not pushing the messages was successful
+  #
+  # @raise [Zeppelin::ClientError] invalid payload format
   def batch_push(*payload)
     response = connection.post(BATCH_PUSH_URI, payload, JSON_HEADERS)
     response.success?
@@ -122,7 +146,10 @@ class Zeppelin
   # Broadcasts a message.
   #
   # @param [Hash] payload the payload of the message
+  #
   # @return [Boolean] whether or not broadcasting the message was successful
+  #
+  # @raise [Zeppelin::ClientError] invalid payload format
   def broadcast(payload)
     response = connection.post(BROADCAST_URI, payload, JSON_HEADERS)
     response.success?
@@ -133,7 +160,10 @@ class Zeppelin
   # This is useful for removing inactive device tokens for the database.
   #
   # @param [Time] since the time to retrieve inactive tokens from
+  #
   # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ClientError] invalid time param
   def feedback(since)
     response = connection.get(feedback_uri(since))
     response.success? ? response.body : nil
@@ -174,6 +204,8 @@ class Zeppelin
   #
   # @return [Boolean] true when the request was successful. Note that this
   #   method will return false if the tag has already been removed.
+  #
+  # @raise [Zeppelin::ResourceNotFound] tag already removed
   def remove_tag(name)
     response = connection.delete(tag_uri(name))
     response.success?
@@ -182,6 +214,8 @@ class Zeppelin
   # @param [String] device_token
   #
   # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] device does not exist
   def device_tags(device_token)
     response = connection.get(device_tag_uri(device_token, nil))
     response.success? ? response.body : nil
@@ -193,6 +227,8 @@ class Zeppelin
   #
   # @return [Boolean] whether or not a tag was successfully associated with
   #   a device
+  #
+  # @raise [Zeppelin::ResourceNotFound] device does not exist
   def add_tag_to_device(device_token, tag_name)
     response = connection.put(device_tag_uri(device_token, tag_name))
     response.success?
@@ -204,6 +240,8 @@ class Zeppelin
   #
   # @return [Boolean] whether or not a tag was successfully dissociated from
   #   a device
+  #
+  # @raise [Zeppelin::ResourceNotFound] device does not exist
   def remove_tag_from_device(device_token, tag_name)
     response = connection.delete(device_tag_uri(device_token, tag_name))
     response.success?
@@ -218,6 +256,7 @@ class Zeppelin
       builder.request :json
 
       builder.use Zeppelin::Middleware::JsonParser
+      builder.use Zeppelin::Middleware::ResponseRaiseError
 
       builder.adapter :net_http
     end
