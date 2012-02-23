@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = 'zeppelin'
 
   s.add_dependency 'faraday'
-  s.add_dependency 'yajl-ruby'
+  s.add_dependency 'multi_json', '~> 1.1'
 
   s.add_development_dependency 'minitest', '~> 2.0'
   s.add_development_dependency 'journo'

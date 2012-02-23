@@ -47,7 +47,7 @@ class ZeppelinTest < Zeppelin::TestCase
     payload = { :alias => 'CapnKernul' }
     
     stub_requests @client.connection do |stub|
-      stub.put("/api/device_tokens/#{@device_token}", Yajl::Encoder.encode(payload)) do
+      stub.put("/api/device_tokens/#{@device_token}", MultiJson.encode(payload)) do
         [200, {}, '']
       end
     end
@@ -71,7 +71,7 @@ class ZeppelinTest < Zeppelin::TestCase
     response_body = { 'foo' => 'bar' }
     stub_requests @client.connection do |stub|
       stub.get("/api/device_tokens/#{@device_token}") do
-        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)]
       end
     end
     
@@ -137,7 +137,7 @@ class ZeppelinTest < Zeppelin::TestCase
     payload = { :alias => 'CapnKernul' }
     
     stub_requests @client.connection do |stub|
-      stub.put("/api/apids/#{@apid}", Yajl::Encoder.encode(payload)) do
+      stub.put("/api/apids/#{@apid}", MultiJson.encode(payload)) do
         [200, {}, '']
       end
     end
@@ -161,7 +161,7 @@ class ZeppelinTest < Zeppelin::TestCase
     response_body = { 'foo' => 'bar' }
     stub_requests @client.connection do |stub|
       stub.get("/api/apids/#{@apid}") do
-        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)]
       end
     end
     
@@ -198,7 +198,7 @@ class ZeppelinTest < Zeppelin::TestCase
     }
     
     stub_requests @client.connection do |stub|
-      stub.post('/api/push/', Yajl::Encoder.encode(payload)) do
+      stub.post('/api/push/', MultiJson.encode(payload)) do
         [200, {}, '']
       end
     end
@@ -236,7 +236,7 @@ class ZeppelinTest < Zeppelin::TestCase
     payload = [message1, message2]
     
     stub_requests @client.connection do |stub|
-      stub.post('/api/push/batch/', Yajl::Encoder.encode(payload)) do
+      stub.post('/api/push/batch/', MultiJson.encode(payload)) do
         [200, {}, '']
       end
     end
@@ -263,7 +263,7 @@ class ZeppelinTest < Zeppelin::TestCase
     }
     
     stub_requests @client.connection do |stub|
-      stub.post('/api/push/broadcast/', Yajl::Encoder.encode(payload)) do
+      stub.post('/api/push/broadcast/', MultiJson.encode(payload)) do
         [200, {}, '']
       end
     end
@@ -290,7 +290,7 @@ class ZeppelinTest < Zeppelin::TestCase
     
     stub_requests @client.connection do |stub|
       stub.get('/api/device_tokens/feedback/?since=1970-01-01T00%3A00%3A00Z') do
-        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)]
       end
     end
     
@@ -316,7 +316,7 @@ class ZeppelinTest < Zeppelin::TestCase
 
     stub_requests @client.connection do |stub|
       stub.get('/api/tags/') do
-        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)]
       end
     end
 
@@ -383,7 +383,7 @@ class ZeppelinTest < Zeppelin::TestCase
 
     stub_requests @client.connection do |stub|
       stub.get("/api/device_tokens/#{device_token}/tags/") do
-        [200, { 'Content-Type' => 'application/json' }, Yajl::Encoder.encode(response_body)]
+        [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)]
       end
     end
 
