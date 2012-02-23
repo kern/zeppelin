@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Zeppelin::JsonParserMiddleware do
+describe Zeppelin::Middleware::JsonParser do
   let(:json_body) { "{\"foo\":\"bar\"}" }
 
   let(:expected_parsed_body) { { 'foo' => 'bar' } }
@@ -25,7 +25,7 @@ describe Zeppelin::JsonParserMiddleware do
     env = { :body => body, :response_headers => Faraday::Utils::Headers.new }
     env[:response_headers]['content-type'] = content_type if content_type
 
-    middleware = Zeppelin::JsonParserMiddleware.new(
+    middleware = Zeppelin::Middleware::JsonParser.new(
       lambda { |env| Faraday::Response.new(env) }
     )
 
