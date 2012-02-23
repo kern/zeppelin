@@ -17,10 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'faraday'
   s.add_dependency 'multi_json', '~> 1.1'
 
-  s.add_development_dependency 'minitest', '~> 2.0'
-  s.add_development_dependency 'journo'
-  s.add_development_dependency 'mocha'
-  s.add_development_dependency 'test_declarative'
+  s.add_development_dependency 'rspec'
   s.add_development_dependency 'rake'
 
   s.files         = `git ls-files`.split("\n")

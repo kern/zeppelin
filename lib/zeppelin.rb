@@ -13,6 +13,8 @@ class Zeppelin
   BROADCAST_URI = '/api/push/broadcast/'
   JSON_HEADERS = { 'Content-Type' => 'application/json' }
 
+  attr_reader :application_key, :application_master_secret, :options
+
   # @param [String] application_key your Urban Airship Application Key
   #
   # @param [String] application_master_secret your Urban Airship Application
