@@ -19,3 +19,4 @@ doc/
 
 # Gem-specific
 Gemfile.lock
+bin/
