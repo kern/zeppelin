@@ -252,7 +252,7 @@ class Zeppelin
 
   def put_request(uri, payload={})
     if !(payload.nil? || payload.empty?)
-      response =connection.put(uri, payload, JSON_HEADERS)
+      response = connection.put(uri, payload, JSON_HEADERS)
     else
       response = connection.put(uri)
     end
