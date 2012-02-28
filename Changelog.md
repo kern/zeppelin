@@ -3,6 +3,7 @@
 ## Enhancements
 
 * Can load APID collection
+* Can load device token collection
 
 ## Changes
 

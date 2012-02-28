@@ -67,6 +67,21 @@ class Zeppelin
     delete_request(uri)
   end
 
+  # Retrieve a page of device tokens
+  #
+  # @param [Integer] page (nil) Page of device tokens to retrieve
+  #
+  # @return [Hash] result set. See documentation for details
+  #
+  # @Note that the next page number is included in the result set instead of the
+  #   raw URI to request for the next page
+  #
+  # @raise [Zeppelin::ClientError] invalid request
+  def device_tokens(page=nil)
+    uri = device_token_uri(nil, :page => page)
+    get_paged_request(uri)
+  end
+
   # Registers an APID.
   #
   # @param [String] apid
@@ -116,13 +131,8 @@ class Zeppelin
   #
   # @raise [Zeppelin::ClientError] invalid request
   def apids(page=nil)
-    uri     = apid_uri(nil, :page => page)
-    results = get_request(uri)
-    md      = results['next_page'] && results['next_page'].match(/start=(\d+)/)
-
-    results['next_page'] = md[1].to_i if !md.nil?
-
-    results
+    uri = apid_uri(nil, :page => page)
+    get_paged_request(uri)
   end
 
   # Pushes a message.
@@ -289,23 +299,33 @@ class Zeppelin
     response.body if response.success?
   end
 
+  def get_paged_request(uri)
+    results = get_request(uri)
+    md      = results['next_page'] && results['next_page'].match(/(start|page)=(\d+)/)
+
+    results['next_page'] = md[2].to_i unless md.nil?
+
+    results
+  end
+
   def post_request(uri, payload)
     connection.post(uri, payload, JSON_HEADERS).success?
   end
 
-  def device_token_uri(device_token)
-    "/api/device_tokens/#{device_token}"
+  def query_string(query)
+    '?' + query.map { |k, v| "#{k}=#{v}" }.join('&')
+  end
+
+  def device_token_uri(device_token, query={})
+    uri  = "/api/device_tokens/#{device_token}"
+    uri << query_string(query) unless query.empty?
+    uri
   end
 
   def apid_uri(apid, query={})
-    uri = "/api/apids/#{apid}"
-
-    if !query.empty?
-      query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
-      "#{uri}?#{query_string}"
-    else
-      uri
-    end
+    uri =  "/api/apids/#{apid}"
+    uri << query_string(query) unless query.empty?
+    uri
   end
 
   def feedback_uri(since)

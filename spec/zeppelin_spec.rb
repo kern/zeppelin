@@ -115,6 +115,71 @@ describe Zeppelin do
     end
   end
 
+  describe '#device_tokens' do
+    let(:results_without_next_page) {
+      {
+        'device_tokens_count' => 1,
+        'device_tokens' => [
+          {
+            'device_token' => 'example device token',
+            'active' => true,
+            'alias' => nil,
+            'last_registration' => Time.mktime(2009, 6, 26, 19, 4, 43).to_s
+          }
+        ],
+        'current_page' => 1,
+        'num_pages' => 1,
+        'active_device_tokens' => 1
+      }
+    }
+
+    let(:results_with_next_page) {
+      results_without_next_page.merge('next_page' => 'https://go.urbanairship.com/api/device_tokens/?page=2&limit=5000')
+    }
+
+    it 'requests a page of device tokens' do
+      stub_requests do |stub|
+        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+      end
+
+      subject.device_tokens.should eq(results_without_next_page)
+    end
+
+    it 'includes the page number of the next page' do
+      stub_requests do |stub|
+        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_with_next_page)] }
+      end
+
+      subject.device_tokens['next_page'].should eq(2)
+    end
+
+    it 'does not include the page number if there are no additional pages' do
+      stub_requests do |stub|
+        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+      end
+
+      subject.device_tokens.should_not have_key('next_page')
+    end
+
+    it 'requests a specified page of device_tokens' do
+      stub_requests do |stub|
+        stub.get('/api/device_tokens/?page=4') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+      end
+
+      subject.device_tokens(4)
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.get('/api/device_tokens/?page=') { [500, {}, ''] }
+      end
+
+      expect {
+        subject.device_tokens
+      }.to raise_error(Zeppelin::ClientError)
+    end
+  end
+
   describe '#register_apid' do
     let(:uri) { "/api/apids/#{device_token}" }
 
@@ -208,17 +273,7 @@ describe Zeppelin do
     }
 
     let(:results_with_next_page) {
-      {
-        'apids' => [
-          {
-            'apid' => 'example apid',
-            'active' => true,
-            'alias' => '',
-            'tags' => []
-          }
-        ],
-        'next_page' => 'https://go.urbanairship.com/api/apids/?start=2&limit=5000'
-      }
+      results_without_next_page.merge('next_page' => 'https://go.urbanairship.com/api/apids/?start=2&limit=5000')
     }
 
     it 'requests a page of APIDs' do
