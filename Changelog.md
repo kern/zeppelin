@@ -2,7 +2,7 @@
 
 ## Enhancements
 
-* Can load APIDs collection
+* Can load APID collection
 
 ## Changes
 
