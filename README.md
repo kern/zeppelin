@@ -24,11 +24,6 @@ With bundler:
 
 Check out the docs for more ways of querying the API.
 
-## TODO ##
-
-* Add support for the statistics API.
-* Add support for the device token list API.
-
 ## Note on Patches/Pull Requests ##
 
 * Fork the project.
@@ -41,6 +36,7 @@ Check out the docs for more ways of querying the API.
 
 * [GitHub Repository](https://github.com/CapnKernul/zeppelin)
 * [Documentation](http://rubydoc.info/github/CapnKernul/zeppelin)
+* [Issues](https://github.com/CapnKernul/zeppelin/issues)
 
 ## License ##
 

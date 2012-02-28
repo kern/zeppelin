@@ -26,7 +26,7 @@ class Zeppelin
       end
 
       def process_content_type?(env)
-        env[:response_headers][CONTENT_TYPE].to_s =~ /\bjson$/
+        env[:response_headers][CONTENT_TYPE].to_s =~ /application\/(.*)json/
       end
 
       def parse_response?(env)

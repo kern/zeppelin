@@ -1,3 +1,14 @@
+# 0.7.0
+
+## Enhancements
+
+* Can load APID collection
+* Can load device token collection
+
+## Changes
+
+* Removed usage of Bundler gem tasks. It's easier to do this by hand.
+
 # 0.6.0
 
 ## Enhancements
