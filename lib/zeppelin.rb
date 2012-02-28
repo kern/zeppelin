@@ -105,6 +105,26 @@ class Zeppelin
     delete_request(uri)
   end
 
+  # Retrieve a page of APIDs
+  #
+  # @param [Integer] page (nil) Page of APIDs to retrieve
+  #
+  # @return [Hash] result set. See documentation for details
+  #
+  # @Note that the next page number is included in the result set instead of the
+  #   raw URI to request for the next page
+  #
+  # @raise [Zeppelin::ClientError] invalid request
+  def apids(page=nil)
+    uri     = apid_uri(nil, :page => page)
+    results = get_request(uri)
+    md      = results['next_page'] && results['next_page'].match(/start=(\d+)/)
+
+    results['next_page'] = md[1].to_i if !md.nil?
+
+    results
+  end
+
   # Pushes a message.
   #
   # @param [Hash] payload the payload of the message
@@ -277,8 +297,15 @@ class Zeppelin
     "/api/device_tokens/#{device_token}"
   end
 
-  def apid_uri(apid)
-    "/api/apids/#{apid}"
+  def apid_uri(apid, query={})
+    uri = "/api/apids/#{apid}"
+
+    if !query.empty?
+      query_string = query.map { |k, v| "#{k}=#{v}" }.join('&')
+      "#{uri}?#{query_string}"
+    else
+      uri
+    end
   end
 
   def feedback_uri(since)

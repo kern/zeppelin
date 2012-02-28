@@ -1,5 +1,9 @@
 # dev
 
+## Enhancements
+
+* Can load APIDs collection
+
 ## Changes
 
 * Removed usage of Bundler gem tasks. It's easier to do this by hand.

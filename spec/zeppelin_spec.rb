@@ -193,6 +193,77 @@ describe Zeppelin do
     end
   end
 
+  describe '#apids' do
+    let(:results_without_next_page) {
+      {
+        'apids' => [
+          {
+            'apid' => 'example apid',
+            'active' => true,
+            'alias' => '',
+            'tags' => []
+          }
+        ]
+      }
+    }
+
+    let(:results_with_next_page) {
+      {
+        'apids' => [
+          {
+            'apid' => 'example apid',
+            'active' => true,
+            'alias' => '',
+            'tags' => []
+          }
+        ],
+        'next_page' => 'https://go.urbanairship.com/api/apids/?start=2&limit=5000'
+      }
+    }
+
+    it 'requests a page of APIDs' do
+      stub_requests do |stub|
+        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+      end
+
+      subject.apids.should eq(results_without_next_page)
+    end
+
+    it 'includes the page number of the next page' do
+      stub_requests do |stub|
+        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_with_next_page)] }
+      end
+
+      subject.apids['next_page'].should eq(2)
+    end
+
+    it 'does not include the page number if there are no additional pages' do
+      stub_requests do |stub|
+        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+      end
+
+      subject.apids.should_not have_key('next_page')
+    end
+
+    it 'requests a specified page of APIDs' do
+      stub_requests do |stub|
+        stub.get('/api/apids/?page=4') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+      end
+
+      subject.apids(4)
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.get('/api/apids/?page=') { [500, {}, ''] }
+      end
+
+      expect {
+        subject.apids
+      }.to raise_error(Zeppelin::ClientError)
+    end
+  end
+
   describe '#push' do
     let(:uri) { '/api/push/' }
 
