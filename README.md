@@ -36,6 +36,7 @@ Check out the docs for more ways of querying the API.
 
 * [GitHub Repository](https://github.com/CapnKernul/zeppelin)
 * [Documentation](http://rubydoc.info/github/CapnKernul/zeppelin)
+* [Issues](https://github.com/CapnKernul/zeppelin/issues)
 
 ## License ##
 
