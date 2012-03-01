@@ -8,3 +8,5 @@ group :development do
   gem 'guard-bundler'
   gem 'guard-rspec'
 end
+
+gem 'simplecov', :group => :test, :platforms => :mri_19, :require => false
