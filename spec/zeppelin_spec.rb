@@ -551,6 +551,30 @@ describe Zeppelin do
     end
   end
 
+  describe '#tags' do
+    let(:uri) { '/api/tags/' }
+
+    let(:response_body) { { :tags => %w[foo bar baz] } }
+
+    it 'is true when request is successful' do
+      stub_requests do |stub|
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)] }
+      end
+
+      subject.tags
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.get(uri) { [500, {}, ''] }
+      end
+
+      expect {
+        subject.tags
+      }.to raise_error(Zeppelin::ClientError)
+    end
+  end
+
   def stub_requests
     subject.connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
     subject.connection.adapter :test do |stubs|
