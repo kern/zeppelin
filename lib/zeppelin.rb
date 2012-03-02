@@ -31,7 +31,7 @@ class Zeppelin
     @connection = initialize_connection
   end
 
-  # Registers a device token.
+  # Registers an iPhone device token.
   #
   # @param [String] device_token
   # @param [Hash] payload the payload to send during registration
@@ -41,6 +41,36 @@ class Zeppelin
   # @raise [Zeppelin::ClientError] malformed request
   def register_device_token(device_token, payload = {})
     uri = device_token_uri(device_token)
+    put_request(uri, payload)
+  end
+
+  # Registers an Android APID.
+  #
+  # @param [String] apid
+  #
+  # @param [Hash] payload the payload to send during registration
+  #
+  # @return [Boolean] whether or not the registration was successful
+  #
+  # @raise [Zeppelin::ClientError] invalid payload format
+  def register_apid(apid, payload = {})
+    uri = apid_uri(apid)
+    put_request(uri, payload)
+  end
+
+  # Registers a Blackberry PIN
+  #
+  # @param [String] pin
+  #
+  # @param [Hash] payload the payload to send during registration
+  #
+  # @return [Boolean] whether or not the registration was successful
+  #
+  # @raise [Zeppelin::ClientError] invalid payload format
+  #
+  # @see http://urbanairship.com/docs/blackberry.html#registration
+  def register_pin(pin, payload = {})
+    uri = pin_uri(pin)
     put_request(uri, payload)
   end
 
@@ -55,6 +85,28 @@ class Zeppelin
     get_request(uri)
   end
 
+  # Retrieves information on an APID.
+  #
+  # @param [String] apid
+  #
+  # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
+  def apid(apid)
+    uri = apid_uri(apid)
+    get_request(uri)
+  end
+
+  # @param [String] pin
+  #
+  # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid PIN provided
+  def pin(pin)
+    uri = pin_uri(pin)
+    get_request(uri)
+  end
+
   # Deletes a device token.
   #
   # @param [String] device_token
@@ -64,6 +116,30 @@ class Zeppelin
   # @raise [Zeppelin::ResourceNotFound] invalid device token provided
   def delete_device_token(device_token)
     uri = device_token_uri(device_token)
+    delete_request(uri)
+  end
+
+  # Deletes an APID.
+  #
+  # @param [String] apid
+  #
+  # @return [Boolean] whether or not the deletion was successful
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
+  def delete_apid(apid)
+    uri = apid_uri(apid)
+    delete_request(uri)
+  end
+
+  # Deletes a PIN
+  #
+  # @param [String] pin
+  #
+  # @return [Boolean] whether or not deletion was successful
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid PIN provided
+  def delete_pin(pin)
+    uri = pin_uri(pin)
     delete_request(uri)
   end
 
@@ -80,44 +156,6 @@ class Zeppelin
   def device_tokens(page=nil)
     uri = device_token_uri(nil, :page => page)
     get_paged_request(uri)
-  end
-
-  # Registers an APID.
-  #
-  # @param [String] apid
-  #
-  # @param [Hash] payload the payload to send during registration
-  #
-  # @return [Boolean] whether or not the registration was successful
-  #
-  # @raise [Zeppelin::ClientError] invalid payload format
-  def register_apid(apid, payload = {})
-    uri = apid_uri(apid)
-    put_request(uri, payload)
-  end
-
-  # Retrieves information on an APID.
-  #
-  # @param [String] apid
-  #
-  # @return [Hash, nil]
-  #
-  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
-  def apid(apid)
-    uri = apid_uri(apid)
-    get_request(uri)
-  end
-
-  # Deletes an APID.
-  #
-  # @param [String] apid
-  #
-  # @return [Boolean] whether or not the deletion was successful
-  #
-  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
-  def delete_apid(apid)
-    uri = apid_uri(apid)
-    delete_request(uri)
   end
 
   # Retrieve a page of APIDs
@@ -338,6 +376,10 @@ class Zeppelin
 
   def device_tag_uri(device_token, tag_name)
     device_token_uri(device_token) + "/tags/#{tag_name}"
+  end
+
+  def pin_uri(pin)
+    "/api/device_pins/#{pin}/"
   end
 end
 
