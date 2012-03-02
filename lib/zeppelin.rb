@@ -85,6 +85,28 @@ class Zeppelin
     get_request(uri)
   end
 
+  # Retrieves information on an APID.
+  #
+  # @param [String] apid
+  #
+  # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
+  def apid(apid)
+    uri = apid_uri(apid)
+    get_request(uri)
+  end
+
+  # @param [String] pin
+  #
+  # @return [Hash, nil]
+  #
+  # @raise [Zeppelin::ResourceNotFound] invalid PIN provided
+  def pin(pin)
+    uri = pin_uri(pin)
+    get_request(uri)
+  end
+
   # Deletes a device token.
   #
   # @param [String] device_token
@@ -110,18 +132,6 @@ class Zeppelin
   def device_tokens(page=nil)
     uri = device_token_uri(nil, :page => page)
     get_paged_request(uri)
-  end
-
-  # Retrieves information on an APID.
-  #
-  # @param [String] apid
-  #
-  # @return [Hash, nil]
-  #
-  # @raise [Zeppelin::ResourceNotFound] invalid APID provided
-  def apid(apid)
-    uri = apid_uri(apid)
-    get_request(uri)
   end
 
   # Deletes an APID.
