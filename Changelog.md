@@ -1,3 +1,9 @@
+# dev
+
+## Enhancements
+
+* Support Blackberry API
+
 # 0.7.0
 
 ## Enhancements

@@ -575,6 +575,89 @@ describe Zeppelin do
     end
   end
 
+  describe '#register_pin' do
+    let(:pin) { '12345678' }
+
+    let(:uri) { "/api/device_pins/#{pin}/" }
+
+    it 'is true when the request is successful' do
+      stub_requests do |stub|
+        stub.put(uri) { [201, {}, ''] }
+      end
+
+      subject.register_pin(pin).should be_true
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.put(uri) { [500, {}, ''] }
+      end
+
+      expect {
+        subject.register_pin(pin)
+      }.to raise_error(Zeppelin::ClientError)
+    end
+  end
+
+  describe '#pin' do
+    let(:pin) { '12345678' }
+
+    let(:uri) { "/api/device_pins/#{pin}/" }
+
+    let(:response_body) {
+      {
+        :device_pin => pin,
+        :alias => 'my alias',
+        :last_registration => Time.mktime(2009, 11, 6, 20, 41, 6),
+        :created => Time.mktime(2009, 11, 6, 20, 41, 6),
+        :active => true,
+        :tags => %w[one two]
+      }
+    }
+
+    it 'responds with information about a device with a PIN when successful' do
+      stub_requests do |stub|
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, response_body] }
+      end
+
+      subject.pin(pin).should eql(response_body)
+    end
+
+    it 'raises an error when the PIN resource cannot be found' do
+      stub_requests do |stub|
+        stub.get(uri) { [404, {}, ''] }
+      end
+
+      expect {
+        subject.pin(pin)
+      }.to raise_error(Zeppelin::ResourceNotFound)
+    end
+  end
+
+  describe '#delete_pin' do
+    let(:pin) { '12345678' }
+
+    let(:uri) { "/api/device_pins/#{pin}/" }
+
+    it 'is true when the request succeeds' do
+      stub_requests do |stub|
+        stub.delete(uri) { [204, {}, ''] }
+      end
+
+      subject.delete_pin(pin).should be_true
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.delete(uri) { [404, {}, ''] }
+      end
+
+      expect {
+        subject.delete_pin(pin)
+      }.to raise_error(Zeppelin::ResourceNotFound)
+    end
+  end
+
   def stub_requests
     subject.connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
     subject.connection.adapter :test do |stubs|
