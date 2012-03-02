@@ -1,5 +1,11 @@
 # dev
 
+# 0.8.1
+
+* Fixes a problem running specs with JRuby and REE
+
+# 0.8.0
+
 ## Enhancements
 
 * Support Blackberry API
