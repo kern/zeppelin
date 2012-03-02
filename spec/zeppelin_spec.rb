@@ -634,6 +634,30 @@ describe Zeppelin do
     end
   end
 
+  describe '#delete_pin' do
+    let(:pin) { '12345678' }
+
+    let(:uri) { "/api/device_pins/#{pin}/" }
+
+    it 'is true when the request succeeds' do
+      stub_requests do |stub|
+        stub.delete(uri) { [204, {}, ''] }
+      end
+
+      subject.delete_pin(pin).should be_true
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.delete(uri) { [404, {}, ''] }
+      end
+
+      expect {
+        subject.delete_pin(pin)
+      }.to raise_error(Zeppelin::ResourceNotFound)
+    end
+  end
+
   def stub_requests
     subject.connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
     subject.connection.adapter :test do |stubs|
