@@ -575,6 +575,30 @@ describe Zeppelin do
     end
   end
 
+  describe '#register_pin' do
+    let(:pin) { '12345678' }
+
+    let(:uri) { "/api/device_pins/#{pin}/" }
+
+    it 'is true when the request is successful' do
+      stub_requests do |stub|
+        stub.put(uri) { [201, {}, ''] }
+      end
+
+      subject.register_pin(pin).should be_true
+    end
+
+    it 'raises an error when the request fails' do
+      stub_requests do |stub|
+        stub.put(uri) { [500, {}, ''] }
+      end
+
+      expect {
+        subject.register_pin(pin)
+      }.to raise_error(Zeppelin::ClientError)
+    end
+  end
+
   def stub_requests
     subject.connection.builder.handlers.delete(Faraday::Adapter::NetHttp)
     subject.connection.adapter :test do |stubs|
