@@ -1,4 +1,8 @@
-# dev
+# 0.8.2
+
+* Update Faraday
+* Use FaradayMiddleware
+* Remove usage of MultiJson
 
 # 0.8.1
 
