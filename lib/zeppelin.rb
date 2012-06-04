@@ -1,4 +1,5 @@
 require 'faraday'
+require 'faraday_middleware'
 require 'time'
 
 # A very tiny Urban Airship Push Notification API client.
@@ -302,13 +303,11 @@ class Zeppelin
   private
 
   def initialize_connection
-    Faraday::Request::JSON.adapter = MultiJson
-
     conn = Faraday::Connection.new(BASE_URI, @options) do |builder|
       builder.request :json
 
-      builder.use Zeppelin::Middleware::JsonParser
-      builder.use Zeppelin::Middleware::ResponseRaiseError
+      builder.response :json, :content_type => /\bjson$/
+      builder.response :zeppelin_raise_error
 
       builder.adapter :net_http
     end
