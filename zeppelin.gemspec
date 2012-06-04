@@ -15,10 +15,11 @@ Gem::Specification.new do |s|
   s.rubyforge_project = 'zeppelin'
 
   s.add_dependency 'faraday'
-  s.add_dependency 'multi_json', '~> 1.1'
+  s.add_dependency 'faraday_middleware'
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'json'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
