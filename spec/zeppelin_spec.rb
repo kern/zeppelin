@@ -28,9 +28,9 @@ describe Zeppelin do
 
     it { subject.connection.builder.handlers.should include(Faraday::Adapter::NetHttp) }
 
-    it { subject.connection.builder.handlers.should include(Faraday::Request::JSON) }
+    it { subject.connection.builder.handlers.should include(FaradayMiddleware::EncodeJson) }
 
-    it { subject.connection.builder.handlers.should include(Zeppelin::Middleware::JsonParser) }
+    it { subject.connection.builder.handlers.should include(FaradayMiddleware::ParseJson) }
 
     it { subject.connection.builder.handlers.should include(Zeppelin::Middleware::ResponseRaiseError) }
 
@@ -76,7 +76,7 @@ describe Zeppelin do
 
     it 'gets information about a device' do
       stub_requests do |stub|
-        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)] }
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, JSON.dump(response_body)] }
       end
 
       subject.device_token(device_token).should eq(response_body)
@@ -139,7 +139,7 @@ describe Zeppelin do
 
     it 'requests a page of device tokens' do
       stub_requests do |stub|
-        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_without_next_page)] }
       end
 
       subject.device_tokens.should eq(results_without_next_page)
@@ -147,7 +147,7 @@ describe Zeppelin do
 
     it 'includes the page number of the next page' do
       stub_requests do |stub|
-        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_with_next_page)] }
+        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_with_next_page)] }
       end
 
       subject.device_tokens['next_page'].should eq(2)
@@ -155,7 +155,7 @@ describe Zeppelin do
 
     it 'does not include the page number if there are no additional pages' do
       stub_requests do |stub|
-        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+        stub.get('/api/device_tokens/?page=') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_without_next_page)] }
       end
 
       subject.device_tokens.should_not have_key('next_page')
@@ -163,7 +163,7 @@ describe Zeppelin do
 
     it 'requests a specified page of device_tokens' do
       stub_requests do |stub|
-        stub.get('/api/device_tokens/?page=4') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+        stub.get('/api/device_tokens/?page=4') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_without_next_page)] }
       end
 
       subject.device_tokens(4)
@@ -195,7 +195,7 @@ describe Zeppelin do
 
     it 'accepts a payload' do
       stub_requests do |stub|
-        stub.put(uri, MultiJson.encode(payload)) { [200, {}, ''] }
+        stub.put(uri, JSON.dump(payload)) { [200, {}, ''] }
       end
 
       subject.register_apid(device_token, payload).should be_true
@@ -219,7 +219,7 @@ describe Zeppelin do
 
     it 'responds with information about a device when request is successful' do
       stub_requests do |stub|
-        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)] }
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, JSON.dump(response_body)] }
       end
 
       subject.apid(device_token).should eq(response_body)
@@ -278,7 +278,7 @@ describe Zeppelin do
 
     it 'requests a page of APIDs' do
       stub_requests do |stub|
-        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_without_next_page)] }
       end
 
       subject.apids.should eq(results_without_next_page)
@@ -286,7 +286,7 @@ describe Zeppelin do
 
     it 'includes the page number of the next page' do
       stub_requests do |stub|
-        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_with_next_page)] }
+        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_with_next_page)] }
       end
 
       subject.apids['next_page'].should eq(2)
@@ -294,7 +294,7 @@ describe Zeppelin do
 
     it 'does not include the page number if there are no additional pages' do
       stub_requests do |stub|
-        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+        stub.get('/api/apids/?page=') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_without_next_page)] }
       end
 
       subject.apids.should_not have_key('next_page')
@@ -302,7 +302,7 @@ describe Zeppelin do
 
     it 'requests a specified page of APIDs' do
       stub_requests do |stub|
-        stub.get('/api/apids/?page=4') { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(results_without_next_page)] }
+        stub.get('/api/apids/?page=4') { [200, { 'Content-Type' => 'application/json' }, JSON.dump(results_without_next_page)] }
       end
 
       subject.apids(4)
@@ -326,7 +326,7 @@ describe Zeppelin do
 
     it 'is true when the request is successful' do
       stub_requests do |stub|
-        stub.post(uri, MultiJson.encode(payload)) { [200, {}, ''] }
+        stub.post(uri, JSON.dump(payload)) { [200, {}, ''] }
       end
 
       subject.push(payload).should be_true
@@ -364,7 +364,7 @@ describe Zeppelin do
 
     it 'is true when the request was successful' do
       stub_requests do |stub|
-        stub.post(uri, MultiJson.encode(payload)) { [200, {}, ''] }
+        stub.post(uri, JSON.dump(payload)) { [200, {}, ''] }
       end
 
       subject.batch_push(message1, message2).should be_true
@@ -388,7 +388,7 @@ describe Zeppelin do
 
     it 'is true when the request is successful' do
       stub_requests do |stub|
-        stub.post(uri, MultiJson.encode(payload)) { [200, {}, ''] }
+        stub.post(uri, JSON.dump(payload)) { [200, {}, ''] }
       end
 
       subject.broadcast(payload).should be_true
@@ -414,7 +414,7 @@ describe Zeppelin do
 
     it 'is the response body for a successful request' do
       stub_requests do |stub|
-        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)] }
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, JSON.dump(response_body)] }
       end
 
       subject.feedback(since)
@@ -486,7 +486,7 @@ describe Zeppelin do
 
     it 'is the collection of tags on a device when request is successful' do
       stub_requests do |stub|
-        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)] }
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, JSON.dump(response_body)] }
       end
 
       subject.device_tags(device_token).should eq(response_body)
@@ -558,7 +558,7 @@ describe Zeppelin do
 
     it 'is true when request is successful' do
       stub_requests do |stub|
-        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, MultiJson.encode(response_body)] }
+        stub.get(uri) { [200, { 'Content-Type' => 'application/json' }, JSON.dump(response_body)] }
       end
 
       subject.tags
