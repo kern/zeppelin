@@ -1,4 +1,4 @@
-# zeppelin - Urban Airship library for Ruby [![StillMaintained Status](http://stillmaintained.com/CapnKernul/zeppelin.png)](http://stillmaintained.com/CapnKernul/zeppelin) [![Build Status](http://travis-ci.org/CapnKernul/zeppelin.png)](http://travis-ci.org/CapnKernul/zeppelin) #
+# zeppelin - Urban Airship library for Ruby [![StillMaintained Status](http://stillmaintained.com/CapnKernul/zeppelin.png)](http://stillmaintained.com/CapnKernul/zeppelin) [![Build Status](https://travis-ci.org/CapnKernul/zeppelin.png)](https://travis-ci.org/CapnKernul/zeppelin)
 
 Ruby client for the [Urban Airship](http://urbanairship.com) Push Notification
 API.
