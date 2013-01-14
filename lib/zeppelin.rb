@@ -28,7 +28,7 @@ class Zeppelin
 
   # The connection to UrbanAirship
   def connection
-    return @connection unless @connection.nil?
+    return @connection if defined?(@connection)
     @connection = initialize_connection
   end
 
