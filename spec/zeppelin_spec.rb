@@ -344,9 +344,11 @@ describe Zeppelin do
   end
 
   describe '#batch_push' do
+    let(:device_token) { '123456789' }
+
     let(:message1) {
       {
-        :device_tokens => [@device_token],
+        :device_tokens => [device_token],
         :aps => { :alert => 'Hello from Urban Airship!' }
       }
     }

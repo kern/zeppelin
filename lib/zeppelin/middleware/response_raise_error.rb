@@ -13,9 +13,9 @@ class Zeppelin
       def on_complete(env)
         super
       rescue Faraday::Error::ResourceNotFound => msg
-        raise ResourceNotFound, msg
+        raise ResourceNotFound, msg.response
       rescue Faraday::Error::ClientError => msg
-        raise ClientError, msg
+        raise ClientError, msg.response
       end
     end
   end
