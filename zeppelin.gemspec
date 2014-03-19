@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/kern/zeppelin'
   s.summary     = %q{Urban Airship library for Ruby}
   s.description = %q{Ruby client for the Urban Airship Push Notification API}
+  s.license     = 'MIT'
 
   s.rubyforge_project = 'zeppelin'
 
