@@ -1,3 +1,7 @@
+# 0.8.3
+
+* Preserve response in error messages. Thanks, @nitrodist!
+
 # 0.8.2
 
 * Update Faraday
