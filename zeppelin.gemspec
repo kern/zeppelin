@@ -15,8 +15,8 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = 'zeppelin'
 
-  s.add_dependency 'faraday'
-  s.add_dependency 'faraday_middleware'
+  s.add_dependency 'faraday', '< 0.9.0'
+  s.add_dependency 'faraday_middleware', '~> 0.9.0', '>= 0.9.0'
 
   s.add_development_dependency 'rspec', '~> 2.14.1', '>= 2.14.1'
   s.add_development_dependency 'rake'
