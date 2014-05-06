@@ -1,4 +1,4 @@
-# Unreleased
+# 0.8.4
 
 * Faraday 0.9.0 compatibility. Thanks, @alexchee!
 
