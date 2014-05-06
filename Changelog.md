@@ -1,3 +1,7 @@
+# Unreleased
+
+* Faraday 0.9.0 compatibility. Thanks, @alexchee!
+
 # 0.8.3
 
 * Preserve response in error messages. Thanks, @nitrodist!
